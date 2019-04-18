@@ -45,6 +45,7 @@ Example on Ubuntu 18.04 LTS Bionic Beaver (amd64), released on April 26, 2018:
   $ sudo apt install libeigen3-dev
 
   # CGAL 4.11
+  $ sudo apt install libgmp-dev libmpfr-dev
   $ sudo apt install libcgal-dev
 
   # --> ! apply patch for CGAL 4.11.0 ! <--
@@ -105,7 +106,7 @@ Example on Ubuntu 18.04 LTS Bionic Beaver (amd64), released on April 26, 2018:
   $ wget https://github.com/google/draco/archive/1.3.4.tar.gz
   $ tar -xzf 1.3.4.tar.gz
   $ cd draco-1.3.4 && mkdir build && cd build
-  $ cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$HOME/draco-1.3.4 ..
+  $ cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX=$HOME/draco-1.3.4 ..
   $ make
   $ make install && cd
 ````
@@ -154,6 +155,8 @@ Scripting commands for compiling Mepp2:
 ### Install dependencies
 Mandatory dependencies:
 ````
+  # CAUTION : if you are under OSX Mojave (10.14), you have to upgrade to 10.14.4 (March 25, 2019) at least in order to avoid black blinking video problem
+
   # install homebrew package manager (see http://brew.sh/), then
   $ brew update
 
@@ -193,7 +196,7 @@ Optional dependencies:
   $ brew tap-pin cartr/qt4
   $ brew install qt@4
 
-  # OpenSceneGraph (use version 3.4.x !)
+  # OpenSceneGraph
   $ brew install open-scene-graph
   $ brew info open-scene-graph
   # -> if the version is not 3.4.x then unlink open-scene-graph (brew unlink open-scene-graph) and
@@ -354,3 +357,5 @@ The automatically generated documentation is [available online](https://liris.cn
    ```
    $ sudo ln -s /usr/lib/x86_64-linux-gnu/libmpi.so /usr/lib/libmpi.so
    ```
+
+* If you are under OSX Mojave (10.14), you have to upgrade to 10.14.4 (March 25, 2019) at least in order to avoid black blinking video problem

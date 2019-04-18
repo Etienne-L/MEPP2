@@ -15,6 +15,7 @@
 #include <boost/any.hpp>
 
 #include "FEVV/Types/Material.h"
+#include "FEVV/Types/Gui_properties.h"
 #include "FEVV/Wrappings/Geometry_traits.h"
 
 /**
@@ -71,9 +72,13 @@ enum face_color_t { face_color };
 /// (refer to \ref GenericPropertyMapConceptPage)
 enum face_material_t { face_material };
 
-/// the materials property of a mesh
+/// the *materials* property of a mesh
 /// (refer to \ref GenericPropertyMapConceptPage)
 enum mesh_materials_t { mesh_materials };
+
+/// the *guiproperties* property of a mesh
+/// (refer to \ref GenericPropertyMapConceptPage)
+enum mesh_guiproperties_t { mesh_guiproperties };
 
 
 //---------------------------------------------------------
@@ -165,6 +170,12 @@ inline std::string get_property_map_name(FEVV::face_material_t)
 inline std::string get_property_map_name(FEVV::mesh_materials_t)
 {
   return std::string("m:materials");
+}
+
+/// (refer to \ref GenericPropertyMapConceptPage)
+inline std::string get_property_map_name(FEVV::mesh_guiproperties_t)
+{
+  return std::string("m:guiproperties");
 }
 
 
@@ -493,6 +504,23 @@ struct _PMap_traits< MeshT, FEVV::mesh_materials_t >
   }
 };
 
+// specialize the property maps traits for mesh gui properties
+// beware: this case is very specific, don't use it as a model
+template< typename MeshT >
+struct _PMap_traits< MeshT, FEVV::mesh_guiproperties_t >
+{
+  typedef FEVV::Types::GuiProperties value_type;
+  typedef typename boost::identity_property_map index_map_type;
+  typedef typename boost::vector_property_map< value_type, index_map_type >
+      pmap_type;
+
+  static pmap_type create(const MeshT &m)
+  {
+    pmap_type pmap;
+    return pmap;
+  }
+};
+
 
 // below is the interface to use property maps
 
@@ -519,6 +547,8 @@ using Halfedge_pmap = typename Halfedge_pmap_traits< MeshT, ValueT >::pmap_type;
 //---------------------------------------------------------
 // Using the property maps traits, the functions that
 // manage the property maps can be written in a generic way.
+
+// --- property maps bag management ---
 
 /// Make (aka build) a new property map for a given property
 /// (refer to \ref GenericPropertyMapConceptPage)
@@ -574,6 +604,57 @@ put_property_map(
   pmaps[map_name] = pmap;
 }
 
+
+/// Remove a property map from the property maps container by name,
+/// if it exists
+/// (refer to \ref GenericPropertyMapConceptPage)
+inline
+void
+remove_property_map_by_name(const std::string &name, PMapsContainer &pmaps)
+{
+  pmaps.erase(name);
+}
+
+
+/// Remove a property map from the property maps container by type,
+/// if it exists
+/// (refer to \ref GenericPropertyMapConceptPage)
+template< typename PropertyT >
+void
+remove_property_map(PropertyT p, PMapsContainer &pmaps)
+{
+  std::string map_name = get_property_map_name(p);
+  remove_property_map_by_name(map_name, pmaps);
+}
+
+
+/// List the property maps from the property maps container
+/// (refer to \ref GenericPropertyMapConceptPage)
+inline
+std::vector< std::string >
+list_property_maps(const PMapsContainer &pmaps)
+{
+  std::vector< std::string > names;
+  for(auto it = pmaps.begin(); it != pmaps.end(); ++it)
+    names.push_back(it->first);
+
+  return names;
+}
+
+
+/// Print the list of the property maps from the property maps container
+/// (refer to \ref GenericPropertyMapConceptPage)
+inline
+void
+print_property_maps(const PMapsContainer &pmaps)
+{
+  std::vector< std::string > names = list_property_maps(pmaps);
+  for(auto it = names.begin(); it != names.end(); ++it)
+    std::cout << *it << std::endl;
+}
+
+
+// --- easy property maps creation ---
 
 /// Make a new vertex property map to store data of type ValueT
 /// (refer to \ref GenericPropertyMapConceptPage)
